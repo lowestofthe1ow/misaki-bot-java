@@ -10,24 +10,27 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class App extends ListenerAdapter {
   BotEvent ongoingBotEvent = null;
   final CommandList commandList = new CommandList(this);
-  
+
   public static void main(String[] arguments) throws Exception {
+    List<CommandData> commandDataList = new ArrayList<CommandData>();
+
     JDA api = JDABuilder.createDefault("MTIzNDA0NDkyNjU5Mzg1OTY0NA.GxB5vi.LLT2FVhEPb_ecmqYXtWrBoUFjFYP_5dsRaI-3s")
         .enableIntents(GatewayIntent.MESSAGE_CONTENT).addEventListeners(new App()).build().awaitReady();
 
-    CommandListUpdateAction commands = api.updateCommands();
+    new CommandList().commandHash.forEach((commandName, command) -> commandDataList
+        .add(Commands.slash(commandName, command.description).addOptions(command.commandOptions)));
 
-    new CommandList().commandHash.forEach((commandName, command) -> commands
-        .addCommands(Commands.slash(commandName, command.description).addOptions(command.commandOptions)).queue());
-
-    commands.queue();
+    api.updateCommands().addCommands(commandDataList).queue();
   }
 
   @Override
@@ -38,7 +41,8 @@ public class App extends ListenerAdapter {
 
     if (content.contains("<@1234044926593859644>")) {
       event.getMessage()
-          .reply(RandomString.randomize("はい！みさきです～", "Pong!", "はい！", "Thaaat's me!", "えへへ～", "にゃん！", "Present!"))
+          .reply(RandomString.randomize(
+            "はい！みさきです～", "Pong!", "はい！", "Thaaat's me!", "えへへ～", "にゃん！", "Present!"))
           .queue();
     }
   }

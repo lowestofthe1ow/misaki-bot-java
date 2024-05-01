@@ -25,9 +25,11 @@ public class CommandHandler {
 
   public void executeHandler(SlashCommandInteractionEvent event) {
     if (callingApp.commandList.commandHash.get(event.getName()).isEvent == true)
-      if (callingApp.ongoingBotEvent != null)
+      if (callingApp.ongoingBotEvent != null) {
         event.reply("Um, whoops. This event is still ongoing. Wait for it to finish, alright?")
             .addEmbeds(callingApp.ongoingBotEvent.buildEmbed().build()).setEphemeral(true).queue();
+        return;
+      }
     callingApp.commandList.commandHash.get(event.getName()).handlerCallback.accept(event, this);
   }
 

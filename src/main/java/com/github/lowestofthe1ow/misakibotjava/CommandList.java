@@ -73,5 +73,19 @@ public class CommandList {
             ((RPS) (callingApp.ongoingBotEvent)).challengePrompt(event);
           }
         }));
+
+    commandHash.put("makechoice", new Command(
+        /* Command description */
+        "Make me decide something for you, perfectly randomly!",
+        /* Whether command involves a BotEvent */
+        false,
+        /* Command options */
+        new OptionData[] {
+            new OptionData(STRING, "choices", "A comma-separated list of items to choose from.", true)
+        },
+        /* Command callback */
+        (event, callingHandler) -> {
+          event.reply("Hmm... I choose: **" + RandomString.randomize(event.getOption("choices").getAsString().trim().split("\\s*,\\s*")) + "**!").queue();
+        }));
   }
 }
