@@ -36,7 +36,7 @@ public class RPS extends BotEvent {
     event.reply("よし！You choose **" + event.getComponentId().substring(10) + "**, yeah?").setEphemeral(true).queue();
   }
 
-  /* TODO: Refactor */
+  /* TODO: Refactor, this kinda looks terrible */
   private String buildResultString() {
     String selected;
     String outcome;
@@ -84,7 +84,7 @@ public class RPS extends BotEvent {
 
   public void challengePrompt(SlashCommandInteractionEvent event) {
     event.reply("\'Kaaay, I'll ping **" + event.getOption("opponent").getAsUser().getName() + "** for you!")
-                .setEphemeral(true).queue();
+        .setEphemeral(true).queue();
     event.getChannel()
         .sendMessage("お～い、" + participants.get(1).getAsMention() + "！**" + participants.get(0).getName()
             + "** is challenging you to rock-paper-scissors! You haaave **15 seconds** to give an answer!")
@@ -99,7 +99,9 @@ public class RPS extends BotEvent {
     super(handler);
 
     eventName = "RPS";
-    participantChoices = Arrays.asList(new String[] {"", ""});
+    participantChoices = Arrays.asList(new String[] {
+        "", ""
+    });
 
     participants.add(user);
     participants.add(opponent);

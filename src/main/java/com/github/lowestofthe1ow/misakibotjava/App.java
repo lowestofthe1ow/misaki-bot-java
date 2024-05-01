@@ -20,19 +20,23 @@ import java.util.List;
 public class App extends ListenerAdapter {
   BotEvent ongoingBotEvent = null;
   final CommandList commandList = new CommandList(this);
-
+  
   public static void main(String[] arguments) throws Exception {
     List<CommandData> commandDataList = new ArrayList<CommandData>();
 
     JDA api = JDABuilder.createDefault("MTIzNDA0NDkyNjU5Mzg1OTY0NA.GxB5vi.LLT2FVhEPb_ecmqYXtWrBoUFjFYP_5dsRaI-3s")
         .enableIntents(GatewayIntent.MESSAGE_CONTENT).addEventListeners(new App()).build().awaitReady();
 
+    /* TODO: Consider refactoring such that we won't need to instantiate a new CommandList here */
     new CommandList().commandHash.forEach((commandName, command) -> commandDataList
         .add(Commands.slash(commandName, command.description).addOptions(command.commandOptions)));
 
     api.updateCommands().addCommands(commandDataList).queue();
   }
-
+  
+  /** 
+   * @param event The MessageReceivedEvent detected by the listener
+   */
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
     if (event.getAuthor().isBot())
@@ -41,21 +45,27 @@ public class App extends ListenerAdapter {
 
     if (content.contains("<@1234044926593859644>")) {
       event.getMessage()
-          .reply(RandomString.randomize(
-            "はい！みさきです～", "Pong!", "はい！", "Thaaat's me!", "えへへ～", "にゃん！", "Present!"))
+          .reply(RandomString.randomize("はい！みさきです～", "Pong!", "はい！", "Thaaat's me!", "えへへ～", "にゃん！", "Present!"))
           .queue();
     }
   }
-
+  
+  /** 
+   * @param event The SlashCommandInteractionEvent detected by the listener
+   */
   @Override
   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
     new CommandHandler(this).executeHandler(event);
   }
-
+  
+  /** 
+   * @param event The ButtonInteractionEvent detected by the listener
+   */
   @Override
   public void onButtonInteraction(ButtonInteractionEvent event) {
     String buttonID = event.getComponentId();
 
+    /* TODO: Pass processing of ButtonInteractionEvents to a separate class */
     switch (buttonID) {
     case "event.rps.rock":
     case "event.rps.paper":
