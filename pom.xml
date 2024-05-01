@@ -10,14 +10,13 @@
   <version>0.1.0</version>
 
   <name>misaki-bot-java</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://github.com/lowestofthe1ow/misaki-bot-java/</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.21</maven.compiler.source>
+    <maven.compiler.target>1.21</maven.compiler.target>
   </properties>
 
   <repositories>
@@ -54,8 +53,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>1.21</source>
+          <target>1.21</target>
         </configuration>
       </plugin>
       <plugin>
@@ -73,8 +72,7 @@
           <transformers>
             <transformer
               implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-              <mainClass>com.github.lowestofthe1ow.misakibotjava.App</mainClass> <!-- You have to
-              replace this with a path to your main class like me.myname.mybotproject.Main -->
+              <mainClass>com.github.lowestofthe1ow.misakibotjava.App</mainClass>
             </transformer>
           </transformers>
           <createDependencyReducedPom>false</createDependencyReducedPom>
