@@ -11,25 +11,28 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CommandList {
-  App callingApp;
+  /** The main App object that created the handler */
+  private App callingApp;
+
+  /** A HashMap mapping command IDs to Command objects */
+  public final HashMap<String, Command> commandHash = new HashMap<String, Command>();
 
   public class Command {
-    String description;
-    BiConsumer<SlashCommandInteractionEvent, CommandHandler> handlerCallback;
-    List<OptionData> commandOptions;
-    Boolean isEvent;
+    /** The command's description */
+    public String description;
+    /** BiConsumer to execute when the command is used */
+    public BiConsumer<SlashCommandInteractionEvent, CommandHandler> handlerCallback;
+    /** List of OptionData for the command */
+    public List<OptionData> commandOptions;
 
-    Command(String description, Boolean isEvent, OptionData[] commandOptions,
+    Command(String description, OptionData[] commandOptions,
         BiConsumer<SlashCommandInteractionEvent, CommandHandler> handlerCallback) {
       this.description = description;
-      this.isEvent = isEvent;
       this.handlerCallback = handlerCallback;
       this.commandOptions = Arrays.asList(commandOptions);
     }
   }
-
-  final HashMap<String, Command> commandHash = new HashMap<String, Command>();
-
+  
   CommandList(App callingApp) {
     this();
     this.callingApp = callingApp;
@@ -39,8 +42,6 @@ public class CommandList {
     commandHash.put("say", new Command(
         /* Command description */
         "Make me say something and bait lowest into doing whatever you want!",
-        /* Whether command involves a BotEvent */
-        false,
         /* Command options */
         new OptionData[] {
             new OptionData(STRING, "content", "Your message", true)
@@ -55,37 +56,36 @@ public class CommandList {
     commandHash.put("rps", new Command(
         /* Command description */
         "Challenge me or someone else to rock-paper-scissors!",
-        /* Whether command involves a BotEvent */
-        true,
         /* Command options */
         new OptionData[] {
             new OptionData(USER, "opponent", "Your opponent!", true)
         },
         /* Command callback */
         (event, callingHandler) -> {
+          /* User and option validation should be handled here */
           if (event.getOption("opponent").getAsUser().isBot())
             event.reply("You can't play against a bot, silly! Unless...").setEphemeral(true).queue();
           else if (event.getOption("opponent").getAsUser().equals(event.getUser()))
             event.reply("Challenging yourself is a good thing and all, but not this time!").setEphemeral(true).queue();
           else {
-            callingApp.ongoingBotEvent = new RPS(callingHandler, event.getUser(),
-                event.getOption("opponent").getAsUser());
-            ((RPS) (callingApp.ongoingBotEvent)).challengePrompt(event);
+            /* Create a new BotEvent, add it to the List of ongoing events, then do as needed here */
+            RPS RPSEvent = new RPS(callingHandler, event.getUser(), event.getOption("opponent").getAsUser());
+            callingApp.ongoingBotEvents.add(RPSEvent);
+            RPSEvent.challengePrompt(event);
           }
         }));
 
     commandHash.put("makechoice", new Command(
         /* Command description */
         "Make me decide something for you, perfectly randomly!",
-        /* Whether command involves a BotEvent */
-        false,
         /* Command options */
         new OptionData[] {
             new OptionData(STRING, "choices", "A comma-separated list of items to choose from.", true)
         },
         /* Command callback */
         (event, callingHandler) -> {
-          event.reply("Hmm... I choose: **" + RandomString.randomize(event.getOption("choices").getAsString().trim().split("\\s*,\\s*")) + "**!").queue();
+          String choice = RandomString.randomize(event.getOption("choices").getAsString().trim().split("\\s*,\\s*"));
+          event.reply("Hmm... I choose: **" + choice + "**!").queue();
         }));
   }
 }

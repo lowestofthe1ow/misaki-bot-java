@@ -1,20 +1,7 @@
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
-
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
+# --------------------------------------------------------------------------------
+# Java.gitignore
+# https://github.com/github/gitignore/blob/main/Java.gitignore
+# --------------------------------------------------------------------------------
 
 # Compiled class file
 *.class
@@ -41,5 +28,50 @@ buildNumber.properties
 hs_err_pid*
 replay_pid*
 
-.vscode
-target/classes/com/github/lowestofthe1ow/misakibotjava/App.class
+# --------------------------------------------------------------------------------
+# Maven.gitignore
+# https://github.com/github/gitignore/blob/main/Maven.gitignore
+# --------------------------------------------------------------------------------
+
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse m2e generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# --------------------------------------------------------------------------------
+# VisualStudioCode.gitignore
+# https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+# --------------------------------------------------------------------------------
+
+.vscode/*
+
+# Un-ignore specific .vscode files
+#!.vscode/settings.json
+#!.vscode/tasks.json
+#!.vscode/launch.json
+#!.vscode/extensions.json
+#!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# --------------------------------------------------------------------------------
+
+# DotEnv file
+.env
