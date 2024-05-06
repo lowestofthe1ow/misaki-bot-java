@@ -59,6 +59,10 @@
         <version>3.13.0</version>
         <configuration>
           <release>21</release>
+          <!-- Temporary patch to EntityExpansionList to allow reading the large JMDict XML file -->
+          <compilerArgs>
+            <arg>-DentityExpansionLimit=100000</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
 
@@ -69,6 +73,10 @@
         <version>3.2.0</version>
         <configuration>
           <mainClass>com.github.lowestofthe1ow.misakibotjava.App</mainClass>
+          <!-- Temporary patch to EntityExpansionList to allow reading the large JMDict XML file -->
+          <arguments>
+            <argument>-DentityExpansionLimit=100000</argument>
+          </arguments>
         </configuration>
       </plugin>
 

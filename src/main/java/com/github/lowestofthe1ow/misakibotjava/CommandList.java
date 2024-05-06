@@ -5,6 +5,9 @@ import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.HashMap;
@@ -32,7 +35,7 @@ public class CommandList {
       this.commandOptions = Arrays.asList(commandOptions);
     }
   }
-  
+
   CommandList(App callingApp) {
     this();
     this.callingApp = callingApp;
@@ -86,6 +89,30 @@ public class CommandList {
         (event, callingHandler) -> {
           String choice = RandomString.randomize(event.getOption("choices").getAsString().trim().split("\\s*,\\s*"));
           event.reply("Hmm... I choose: **" + choice + "**!").queue();
+        }));
+
+    commandHash.put("jpdef", new Command(
+        /* Command description */
+        "Make me look up a word on the JMDict Japanese dictionary!",
+        /* Command options */
+        new OptionData[] {
+            new OptionData(STRING, "word", "The word to seach for.", true)
+        },
+        /* Command callback */
+        (event, callingHandler) -> {
+          /* Acknowledge event with a deferred reply */
+          event.deferReply().queue();
+
+          /* Attempt to load JMDict XML file */
+          try {
+            File jmdict = new File(this.getClass().getClassLoader().getResource("\\JMdict_e_examp.xml").toURI());
+            FileInputStream jmdict_stream = new FileInputStream(jmdict);
+
+            new JMDictXMLStAXReader(event, jmdict_stream).parse();
+            /* Throw an error if file could not be loaded */
+          } catch (Exception e) {
+            event.getHook().sendMessage(e.getMessage()).queue();
+          }
         }));
   }
 }
