@@ -108,7 +108,13 @@ public class CommandList {
             new JMDictXMLStAXReader(event, jmdict_stream).parse();
             /* Throw an error if file could not be loaded */
           } catch (Exception e) {
-            event.getHook().sendMessage(e.getMessage()).queue();
+            event.getHook().sendMessage("Oh nooo, an error. Whatever will I do?\n```\n" + e.getMessage() + "\n```")
+                .queue();
+            /* Funny error message for when the EntityExpansionLimit property isn't set properly (see above TODO) */
+            if (e.getMessage().contains("JAXP00010001"))
+              event.getHook().sendMessage(
+                  "(Psst. That means you should prooobably toss in a `-DentityExpansionLimit=0` when running the `.jar`)")
+                  .queue();
           }
         }));
   }
