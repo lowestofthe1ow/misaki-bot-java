@@ -1,6 +1,6 @@
 package com.github.lowestofthe1ow.misakibotjava;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -43,7 +43,7 @@ abstract class XMLStAXReader {
     return tagsList.indexOf(xmlStreamReader.getLocalName());
   }
 
-  XMLStAXReader(FileInputStream xmlStream) throws XMLStreamException {
+  XMLStAXReader(InputStream xmlStream) throws XMLStreamException {
     this.xmlStreamReader = xmlInputFactory.createXMLStreamReader(xmlStream);
   }
 }

@@ -5,8 +5,7 @@ import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
@@ -105,9 +104,7 @@ public class CommandList {
 
           /* Attempt to load JMDict XML file */
           try {
-            File jmdict = new File(this.getClass().getClassLoader().getResource("\\JMdict_e_examp.xml").toURI());
-            FileInputStream jmdict_stream = new FileInputStream(jmdict);
-
+            InputStream jmdict_stream = this.getClass().getResourceAsStream("/JMdict_e_examp.xml");
             new JMDictXMLStAXReader(event, jmdict_stream).parse();
             /* Throw an error if file could not be loaded */
           } catch (Exception e) {

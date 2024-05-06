@@ -2,7 +2,7 @@ package com.github.lowestofthe1ow.misakibotjava;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-import java.io.FileInputStream;
+import java.io.InputStream;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -38,7 +38,7 @@ public class JMDictXMLStAXReader extends XMLStAXReader {
       event.getHook().sendMessage("Eh? You're just making up words, right?").queue();
   }
 
-  JMDictXMLStAXReader(SlashCommandInteractionEvent event, FileInputStream xmlStream) throws XMLStreamException {
+  JMDictXMLStAXReader(SlashCommandInteractionEvent event, InputStream xmlStream) throws XMLStreamException {
     super(xmlStream);
     this.event = event;
   }
