@@ -75,3 +75,6 @@ buildNumber.properties
 
 # DotEnv file
 .env
+
+# Batch file for running JAR file
+run.bat
