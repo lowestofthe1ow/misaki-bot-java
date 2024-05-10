@@ -78,3 +78,7 @@ buildNumber.properties
 
 # Batch file for running JAR file
 run.bat
+
+# KoboldCPP
+koboldcpp.exe
+settings.kcpps

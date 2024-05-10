@@ -117,5 +117,16 @@ public class CommandList {
                   .queue();
           }
         }));
+
+    commandHash.put("forgettibeam", new Command(
+        /* Command description */
+        "Make me forget all your chat history with me! (Clears the bot's chat context)",
+        /* Command options */
+        new OptionData[] {},
+        /* Command callback */
+        (event, callingHandler) -> {
+          callingApp.llmClient.context.setLength(0);
+          event.reply("This poor udon-obsessed soul will now proceed to forget everything.").queue();
+        }));
   }
 }
