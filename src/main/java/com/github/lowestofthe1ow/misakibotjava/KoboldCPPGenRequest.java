@@ -11,7 +11,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 import java.util.concurrent.CompletableFuture;
 
-public class KoboldCPPGenerateRequest {
+public class KoboldCPPGenRequest {
   /*
    * Ported from Genesis 13B Preset (https://github.com/KoboldAI/KoboldAI-Client/wiki/Settings-Presets) Stable and
    * logical, but with scattered creativity. Preset created in NovelAI for the Euterpe model. Suitable for KoboldAI
@@ -69,7 +69,7 @@ public class KoboldCPPGenerateRequest {
   public String memory;
   public String prompt;
 
-  public CompletableFuture<HttpResponse<String>> generate() throws Exception {
+  public CompletableFuture<HttpResponse<String>> sendGenRequest() throws Exception {
     HttpRequest request = HttpRequest.newBuilder().uri(new URI("http://localhost:5001/api/v1/generate/"))
         .headers("Content-Type", "text/plain;charset=UTF-8")
         .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(this))).build();
@@ -78,7 +78,7 @@ public class KoboldCPPGenerateRequest {
     return client.sendAsync(request, BodyHandlers.ofString());
   }
 
-  KoboldCPPGenerateRequest(String memory, String prompt) {
+  KoboldCPPGenRequest(String memory, String prompt) {
     this.memory = memory;
     this.prompt = prompt;
   }

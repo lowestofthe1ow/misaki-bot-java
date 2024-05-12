@@ -126,6 +126,7 @@ public class CommandList {
         /* Command callback */
         (event, callingHandler) -> {
           callingApp.llmClient.context.setLength(0);
+          callingApp.llmClient.worldInfo.setLength(0);
           event.reply("This poor udon-obsessed soul will now proceed to forget everything.").queue();
         }));
   }

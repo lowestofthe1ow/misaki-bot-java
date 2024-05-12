@@ -15,41 +15,37 @@ import java.util.TimerTask;
 public class KoboldCPPClient {
   /** A StringBuilder modified dynamically to create the context for prompts */
   public final StringBuilder context = new StringBuilder();
-  /*
-   * TODO: Implement KoboldCPP's WorldInfo feature
-   * 
-   * private final StringBuilder worldInfo = new StringBuilder();
-   */
+
+  /** A StringBuilder modified dynamically to add world info to memory */
+  public final StringBuilder worldInfo = new StringBuilder();
 
   /** The imported Memory field from resources/memory.txt */
   private final String memory;
   /** The imported Author's Note field from resources/authorsnote.txt */
   private final String authorsNote;
 
-  /*
-   * The OpenHermes 2.5 Mistral 7B model uses the ChatML format for its prompts.
-   * https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/chat-markup-language
+  /** 
+   * Updates the world info field based on the content of message
+   * 
+   * @param message The string to scan for key matches
    */
-  private class ChatML {
-    /**
-     * The role name injected next to the start tag. Usually "system", "user", or "assistant" sometimes paired with the
-     * tag " name=" to track sender names
-     */
-    private final String role;
-    /** The message to be placed in between tags */
-    private final String message;
+  public void updateWorldInfo(String message) {
+    try {
+      InputStream worldInfoStream = this.getClass().getResourceAsStream("/worldinfo.json");
+      String worldInfoJSON = new String(worldInfoStream.readAllBytes(), StandardCharsets.UTF_8);
+      KoboldCPPWorldInfo worldInfoObject = new ObjectMapper().readValue(worldInfoJSON, KoboldCPPWorldInfo.class);
 
-    /**
-     * Builds the ChatML-formatted string to send to the AI model. Generally results in strings such as:
-     * "<|im_start|>user name=lowestofthelow\\nHello!<|im_end|>\\n"
-     */
-    public String build() {
-      return "<|im_start|>" + role + "\\n" + message + "<|im_end|>\\n";
-    }
-
-    ChatML(String role, String message) {
-      this.role = role;
-      this.message = message;
+      for (KoboldCPPWorldInfoEntry i : worldInfoObject.items)
+        for (String j : i.keys)
+          /* Check for a key match ignoring case. TODO: Optimize */
+          if (message.toLowerCase().contains(j.toLowerCase()) && worldInfo.indexOf(i.description) == -1) {
+            System.out.println(i.description);
+            worldInfo.append(new ChatML("system", i.description).build());
+            break;
+          }
+    } catch (Exception e) {
+      /* Handle the errors here, idk lmfao */
+      System.out.println(e.getMessage());
     }
   }
 
@@ -62,6 +58,7 @@ public class KoboldCPPClient {
   public void requestGenerate(Message messageObject) throws Exception {
     /* Timer for repeatedly sending the "is typing..." status to Discord */
     final Timer timer = new Timer();
+    
     /*
      * The raw content of the user's message. getContentDisplay() returns the content as if it were displayed on
      * Discord's UI, which makes it more readable
@@ -72,10 +69,13 @@ public class KoboldCPPClient {
     /* The user's prompt formatted in ChatML */
     final String userChatML = new ChatML("user name=" + messageObject.getMember().getUser().getName(), userRaw).build();
 
+    /* Update World Info */
+    updateWorldInfo(userRaw);
+
     /* Construct a request to KoboldCPP. Ends in an open "assistant" tag for the bot to complete */
-    final KoboldCPPGenerateRequest request = new KoboldCPPGenerateRequest(
+    final KoboldCPPGenRequest request = new KoboldCPPGenRequest(
         /* [Memory][World info] */
-        memory /* + worldInfo */,
+        memory + worldInfo.toString(),
         /* [Context][Author's note][User message]<|im_start|>assistant\\n */
         context.toString() + authorsNote + userChatML + "<|im_start|>assistant\\n");
 
@@ -88,7 +88,7 @@ public class KoboldCPPClient {
     }, 0, 10000);
 
     /* Send the request asynchronously and await a response */
-    request.generate().thenAccept((response) -> {
+    request.sendGenRequest().thenAccept((response) -> {
       try {
         /* Extract the raw content of the bot's response */
         final String responseRaw = new ObjectMapper().readTree(response.body())
@@ -102,6 +102,7 @@ public class KoboldCPPClient {
          * Add the following to the chat context: [User message][Bot message]
          */
         context.append(userChatML + new ChatML("assistant", responseRaw).build());
+        updateWorldInfo(responseRaw);
         /* Reply to the message and stop the "is typing..." timer */
         messageObject.reply(responseRaw).queue((botMessageObject) -> {
           timer.cancel();
