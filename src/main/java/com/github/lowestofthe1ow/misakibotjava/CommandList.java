@@ -127,6 +127,7 @@ public class CommandList {
         (event, callingHandler) -> {
           callingApp.llmClient.context.setLength(0);
           callingApp.llmClient.worldInfo.setLength(0);
+          callingApp.llmClient.initializeWorldInfo();
           event.reply("This poor udon-obsessed soul will now proceed to forget everything.").queue();
         }));
   }

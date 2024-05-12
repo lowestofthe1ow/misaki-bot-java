@@ -9,13 +9,13 @@ import java.io.InputStream;
 
 import java.nio.charset.StandardCharsets;
 
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class KoboldCPPClient {
   /** A StringBuilder modified dynamically to create the context for prompts */
   public final StringBuilder context = new StringBuilder();
-
   /** A StringBuilder modified dynamically to add world info to memory */
   public final StringBuilder worldInfo = new StringBuilder();
 
@@ -24,25 +24,40 @@ public class KoboldCPPClient {
   /** The imported Author's Note field from resources/authorsnote.txt */
   private final String authorsNote;
 
-  /** 
-   * Updates the world info field based on the content of message
+  /** The imported world info field from resources/worldinfo.json */
+  public KoboldCPPWorldInfo worldInfoObject;
+
+  /**
+   * Updates the world info field based on the content of message TODO: Optimize
    * 
    * @param message The string to scan for key matches
    */
   public void updateWorldInfo(String message) {
+    Iterator<KoboldCPPWorldInfoEntry> iterator = worldInfoObject.items.iterator();
+    while (iterator.hasNext()) {
+      /* Get next entry in world info */
+      KoboldCPPWorldInfoEntry index = iterator.next();
+      for (String j : index.keys)
+        /* Check for a key match ignoring case. TODO: Optimize */
+        if (message.toLowerCase().contains(j.toLowerCase())) {
+          System.out.println(index.description);
+          /* Append to world info field */
+          worldInfo.append(new ChatML("system", index.description).build());
+          /* Remove from world info object */
+          iterator.remove();
+          break;
+        }
+    }
+  }
+
+  /**
+   * Initializes the world info field
+   */
+  public void initializeWorldInfo() {
     try {
       InputStream worldInfoStream = this.getClass().getResourceAsStream("/worldinfo.json");
       String worldInfoJSON = new String(worldInfoStream.readAllBytes(), StandardCharsets.UTF_8);
-      KoboldCPPWorldInfo worldInfoObject = new ObjectMapper().readValue(worldInfoJSON, KoboldCPPWorldInfo.class);
-
-      for (KoboldCPPWorldInfoEntry i : worldInfoObject.items)
-        for (String j : i.keys)
-          /* Check for a key match ignoring case. TODO: Optimize */
-          if (message.toLowerCase().contains(j.toLowerCase()) && worldInfo.indexOf(i.description) == -1) {
-            System.out.println(i.description);
-            worldInfo.append(new ChatML("system", i.description).build());
-            break;
-          }
+      worldInfoObject = new ObjectMapper().readValue(worldInfoJSON, KoboldCPPWorldInfo.class);
     } catch (Exception e) {
       /* Handle the errors here, idk lmfao */
       System.out.println(e.getMessage());
@@ -58,7 +73,7 @@ public class KoboldCPPClient {
   public void requestGenerate(Message messageObject) throws Exception {
     /* Timer for repeatedly sending the "is typing..." status to Discord */
     final Timer timer = new Timer();
-    
+
     /*
      * The raw content of the user's message. getContentDisplay() returns the content as if it were displayed on
      * Discord's UI, which makes it more readable
@@ -119,6 +134,7 @@ public class KoboldCPPClient {
     InputStream authorsNoteStream = this.getClass().getResourceAsStream("/authorsnote.txt");
     InputStream memoryStream = this.getClass().getResourceAsStream("/memory.txt");
 
+    initializeWorldInfo();
     authorsNote = new ChatML("system", new String(authorsNoteStream.readAllBytes(), StandardCharsets.UTF_8)).build();
     memory = new ChatML("system", new String(memoryStream.readAllBytes(), StandardCharsets.UTF_8)).build();
   }
