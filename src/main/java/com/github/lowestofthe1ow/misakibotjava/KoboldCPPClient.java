@@ -80,7 +80,7 @@ public class KoboldCPPClient {
      */
     final String userRaw = messageObject.getContentDisplay()
         /* Replace all instances of "@MisakiBot" with "Misaki" to make the prompt clearer */
-        .replaceAll("@MisakiBot", "Misaki");
+        .replaceAll("@MisakiBot", "");
     /* The user's prompt formatted in ChatML */
     final String userChatML = new ChatML("user name=" + messageObject.getMember().getUser().getName(), userRaw).build();
 
