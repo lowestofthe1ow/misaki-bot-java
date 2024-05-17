@@ -2,14 +2,17 @@ package com.github.lowestofthe1ow.misakibotjava;
 
 import net.dv8tion.jda.api.entities.Message;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.nio.charset.StandardCharsets;
 
-import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,7 +28,7 @@ public class KoboldCPPClient {
   private final String authorsNote;
 
   /** The imported world info field from resources/worldinfo.json */
-  public KoboldCPPWorldInfo worldInfoObject;
+  public ConcurrentHashMap<List<String>, String> worldInfoMap;
 
   /**
    * Updates the world info field based on the content of message TODO: Optimize
@@ -33,21 +36,18 @@ public class KoboldCPPClient {
    * @param message The string to scan for key matches
    */
   public void updateWorldInfo(String message) {
-    Iterator<KoboldCPPWorldInfoEntry> iterator = worldInfoObject.items.iterator();
-    while (iterator.hasNext()) {
-      /* Get next entry in world info */
-      KoboldCPPWorldInfoEntry index = iterator.next();
-      for (String j : index.keys)
-        /* Check for a key match ignoring case. TODO: Optimize */
-        if (message.toLowerCase().contains(j.toLowerCase())) {
-          System.out.println(index.description);
-          /* Append to world info field */
-          worldInfo.append(new ChatML("system", index.description).build());
-          /* Remove from world info object */
-          iterator.remove();
-          break;
-        }
-    }
+    worldInfoMap.keySet().stream()
+        /* Filter the stream sourced from the keys list */
+        .filter((keys) -> keys.stream()
+            /* Include entry in filter if the message contains any of the keys */
+            .anyMatch((key) -> message.toLowerCase().contains(key.toLowerCase())))
+        /* Iterate over the matches */
+        .forEach((List<String> match) -> {
+          /* Update world info fields */
+          worldInfo.append(worldInfoMap.get(match));
+          System.out.println("Added world info to memory: " + worldInfoMap.get(match));
+          worldInfoMap.remove(match);
+        });
   }
 
   /**
@@ -55,13 +55,34 @@ public class KoboldCPPClient {
    */
   public void initializeWorldInfo() {
     try {
+      ObjectMapper mapper = new ObjectMapper();
       InputStream worldInfoStream = this.getClass().getResourceAsStream("/worldinfo.json");
       String worldInfoJSON = new String(worldInfoStream.readAllBytes(), StandardCharsets.UTF_8);
-      worldInfoObject = new ObjectMapper().readValue(worldInfoJSON, KoboldCPPWorldInfo.class);
+      ArrayNode worldInfoArray = (ArrayNode) mapper.readTree(worldInfoJSON);
+
+      TypeReference<List<String>> listType = new TypeReference<List<String>>() {
+      };
+
+      worldInfoMap = new ConcurrentHashMap<List<String>, String>();
+
+      worldInfoArray.forEach((entry) -> {
+        try {
+          worldInfoMap.put(
+              /* Add keys list */
+              mapper.readValue(entry.get("keys").toString(), listType),
+              /* Add description string */
+              entry.get("description").asText());
+        } catch (Exception e) {
+          /* Handle the errors here, idk lmfao */
+          System.out.println(e.getMessage());
+        }
+      });
     } catch (Exception e) {
       /* Handle the errors here, idk lmfao */
       System.out.println(e.getMessage());
     }
+
+    System.out.println(worldInfoMap);
   }
 
   /**
@@ -82,7 +103,7 @@ public class KoboldCPPClient {
         /* Replace all instances of "@MisakiBot" with "Misaki" to make the prompt clearer */
         .replaceAll("@MisakiBot", "");
     /* The user's prompt formatted in ChatML */
-    final String userChatML = new ChatML("user name=" + messageObject.getMember().getUser().getName(), userRaw).build();
+    final String userChatML = new ChatML("user name=" + messageObject.getAuthor().getName(), userRaw).build();
 
     /* Update World Info */
     updateWorldInfo(userRaw);
@@ -125,7 +146,8 @@ public class KoboldCPPClient {
         });
       } catch (Exception e) {
         /* Handle the errors here, idk lmfao */
-        messageObject.reply("Oh nooo, an error. Whatever will I do?\n```\n" + e.getMessage() + "\n```").queue();
+        messageObject.reply("Oh nooo, an error. Error happened here lol. Whatever will I do?\n```\n" + e + "\n```")
+            .queue();
       }
     });
   }
