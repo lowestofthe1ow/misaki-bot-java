@@ -90,34 +90,6 @@ public class CommandList {
           event.reply("Hmm... I choose: **" + choice + "**!").queue();
         }));
 
-    commandHash.put("jpdef", new Command(
-        /* Command description */
-        "Make me look up a word on the JMDict Japanese dictionary!",
-        /* Command options */
-        new OptionData[] {
-            new OptionData(STRING, "word", "The word to seach for.", true)
-        },
-        /* Command callback */
-        (event, callingHandler) -> {
-          /* Acknowledge event with a deferred reply */
-          event.deferReply().queue();
-
-          /* Attempt to load JMDict XML file */
-          try {
-            InputStream jmdict_stream = this.getClass().getResourceAsStream("/JMdict_e_examp.xml");
-            new JMDictXMLStAXReader(event, jmdict_stream).parse();
-            /* Throw an error if file could not be loaded */
-          } catch (Exception e) {
-            event.getHook().sendMessage("Oh nooo, an error. Whatever will I do?\n```\n" + e.getMessage() + "\n```")
-                .queue();
-            /* Funny error message for when the EntityExpansionLimit property isn't set properly (see above TODO) */
-            if (e.getMessage().contains("JAXP00010001"))
-              event.getHook().sendMessage(
-                  "(Psst. That means you should prooobably toss in a `-DentityExpansionLimit=0` when running the `.jar`)")
-                  .queue();
-          }
-        }));
-
     commandHash.put("forgettibeam", new Command(
         /* Command description */
         "Make me forget all your chat history with me! (Clears the bot's chat context)",
