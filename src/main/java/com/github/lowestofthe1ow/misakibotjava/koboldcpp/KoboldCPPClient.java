@@ -1,4 +1,4 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.koboldcpp;
 
 import net.dv8tion.jda.api.entities.Message;
 
@@ -152,7 +152,7 @@ public class KoboldCPPClient {
     });
   }
 
-  KoboldCPPClient() throws IOException {
+  public KoboldCPPClient() throws IOException {
     InputStream authorsNoteStream = this.getClass().getResourceAsStream("/authorsnote.txt");
     InputStream memoryStream = this.getClass().getResourceAsStream("/memory.txt");
 

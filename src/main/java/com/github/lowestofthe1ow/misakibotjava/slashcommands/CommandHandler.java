@@ -1,7 +1,10 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.slashcommands;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+
+import com.github.lowestofthe1ow.misakibotjava.botevents.*;
+import com.github.lowestofthe1ow.misakibotjava.App;
 
 import java.util.Timer;
 
@@ -57,7 +60,7 @@ public class CommandHandler {
     callingApp.commandList.commandHash.get(event.getName()).handlerCallback.accept(event, this);
   }
 
-  CommandHandler(App callingApp) {
+  public CommandHandler(App callingApp) {
     this.callingApp = callingApp;
   }
 }

@@ -1,5 +1,9 @@
 package com.github.lowestofthe1ow.misakibotjava;
 
+import com.github.lowestofthe1ow.misakibotjava.botevents.BotEvent;
+import com.github.lowestofthe1ow.misakibotjava.slashcommands.*;
+import com.github.lowestofthe1ow.misakibotjava.koboldcpp.KoboldCPPClient;
+
 import net.dv8tion.jda.api.JDABuilder;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

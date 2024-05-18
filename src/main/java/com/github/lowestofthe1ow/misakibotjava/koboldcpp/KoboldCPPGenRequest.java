@@ -1,4 +1,4 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.koboldcpp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

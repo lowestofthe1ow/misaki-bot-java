@@ -1,4 +1,6 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.botevents;
+
+import com.github.lowestofthe1ow.misakibotjava.slashcommands.CommandHandler;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-abstract class BotEvent {
+public abstract class BotEvent {
   /** A list of all participants in the event */
   public final List<User> participants = new ArrayList<User>();
   /** A list of all messages that are "listening" for user input */
@@ -21,8 +23,8 @@ abstract class BotEvent {
   /** The CommandHandler calling this BotEvent. This is the same CommandHandler paired to the event in ongoingBotEvents */
   public CommandHandler callingHandler;
 
-  abstract void handleButton(ButtonInteractionEvent event);
-  abstract EmbedBuilder buildEmbed();
+  public abstract void handleButton(ButtonInteractionEvent event);
+  protected abstract EmbedBuilder buildEmbed();
 
   /** 
    * Create a new Timer object for the callingHandler's handlerTimer field and schedule a TimerTask

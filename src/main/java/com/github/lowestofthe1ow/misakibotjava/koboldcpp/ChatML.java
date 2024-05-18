@@ -1,4 +1,4 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.koboldcpp;
 
 /*
  * The OpenHermes 2.5 Mistral 7B model uses the ChatML format for its prompts.

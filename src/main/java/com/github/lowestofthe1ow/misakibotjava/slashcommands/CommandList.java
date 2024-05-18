@@ -1,11 +1,13 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.slashcommands;
+
+import com.github.lowestofthe1ow.misakibotjava.util.RandomString;
+import com.github.lowestofthe1ow.misakibotjava.botevents.*;
 
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
-import java.io.InputStream;
+import com.github.lowestofthe1ow.misakibotjava.App;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;
@@ -35,12 +37,12 @@ public class CommandList {
     }
   }
 
-  CommandList(App callingApp) {
+  public CommandList(App callingApp) {
     this();
     this.callingApp = callingApp;
   }
 
-  CommandList() {
+  public CommandList() {
     commandHash.put("say", new Command(
         /* Command description */
         "Make me say something and bait lowest into doing whatever you want!",

@@ -1,4 +1,4 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.koboldcpp;
 
 abstract class PromptTemplate {
   /** The message to be placed in between tags */

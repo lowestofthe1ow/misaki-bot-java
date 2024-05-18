@@ -1,4 +1,4 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.util;
 
 import java.util.Random;
 

@@ -1,4 +1,8 @@
-package com.github.lowestofthe1ow.misakibotjava;
+package com.github.lowestofthe1ow.misakibotjava.botevents;
+
+import com.github.lowestofthe1ow.misakibotjava.util.RandomString;
+
+import com.github.lowestofthe1ow.misakibotjava.slashcommands.CommandHandler;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -160,7 +164,7 @@ public class RPS extends BotEvent {
         });
   }
 
-  RPS(CommandHandler handler, User user, User opponent) {
+  public RPS(CommandHandler handler, User user, User opponent) {
     super(handler);
     eventName = "RPS";
 
