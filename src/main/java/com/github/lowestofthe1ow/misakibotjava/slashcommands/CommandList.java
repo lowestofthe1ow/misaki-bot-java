@@ -1,7 +1,6 @@
 package com.github.lowestofthe1ow.misakibotjava.slashcommands;
 
 import com.github.lowestofthe1ow.misakibotjava.util.RandomString;
-import com.github.lowestofthe1ow.misakibotjava.botevents.*;
 
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -55,28 +54,6 @@ public class CommandList {
           event.reply(RandomString.randomize("わかった！I'll go say that!", "はい～はい！I'll say that, then!", "言いましょう～"))
               .setEphemeral(true).queue();
           event.getChannel().sendMessage(event.getOption("content").getAsString()).queue();
-        }));
-
-    commandHash.put("rps", new Command(
-        /* Command description */
-        "Challenge me or someone else to rock-paper-scissors!",
-        /* Command options */
-        new OptionData[] {
-            new OptionData(USER, "opponent", "Your opponent!", true)
-        },
-        /* Command callback */
-        (event, callingHandler) -> {
-          /* User and option validation should be handled here */
-          if (event.getOption("opponent").getAsUser().isBot())
-            event.reply("You can't play against a bot, silly! Unless...").setEphemeral(true).queue();
-          else if (event.getOption("opponent").getAsUser().equals(event.getUser()))
-            event.reply("Challenging yourself is a good thing and all, but not this time!").setEphemeral(true).queue();
-          else {
-            /* Create a new BotEvent, add it to the List of ongoing events, then do as needed here */
-            RPS RPSEvent = new RPS(callingHandler, event.getUser(), event.getOption("opponent").getAsUser());
-            callingApp.ongoingBotEvents.add(RPSEvent);
-            RPSEvent.challengePrompt(event);
-          }
         }));
 
     commandHash.put("makechoice", new Command(
