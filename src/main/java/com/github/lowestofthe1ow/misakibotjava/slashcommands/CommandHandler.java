@@ -56,8 +56,8 @@ public class CommandHandler {
    * 
    * @param event The SlashCommandInteractionEvent detected by the listener
    */
-  public void executeHandler(SlashCommandInteractionEvent event) {
-    callingApp.commandList.commandHash.get(event.getName()).handlerCallback.accept(event, this);
+  public void executeHandler(SlashCommandInteractionEvent event, CommandBody commandBody) {
+    commandBody.execute(event);
   }
 
   public CommandHandler(App callingApp) {

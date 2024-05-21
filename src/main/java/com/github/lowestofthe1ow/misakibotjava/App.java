@@ -1,35 +1,32 @@
 package com.github.lowestofthe1ow.misakibotjava;
 
-import com.github.lowestofthe1ow.misakibotjava.botevents.BotEvent;
-import com.github.lowestofthe1ow.misakibotjava.slashcommands.*;
-import com.github.lowestofthe1ow.misakibotjava.koboldcpp.KoboldCPPClient;
-
-import net.dv8tion.jda.api.JDABuilder;
-
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
-import net.dv8tion.jda.api.requests.GatewayIntent;
-
-import io.github.cdimascio.dotenv.Dotenv;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class App extends ListenerAdapter {
-  /** A List that tracks ongoing BotEvents */
-  public final List<BotEvent> ongoingBotEvents = new ArrayList<BotEvent>();
-  /** A CommandList that lists all valid commands */
-  public final CommandList commandList = new CommandList(this);
+import com.github.lowestofthe1ow.misakibotjava.botevents.BotEvent;
+import com.github.lowestofthe1ow.misakibotjava.koboldcpp.KoboldCPPClient;
+import com.github.lowestofthe1ow.misakibotjava.slashcommands.CommandHandler;
+import com.github.lowestofthe1ow.misakibotjava.slashcommands.CommandList;
 
+import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+
+public class App extends ListenerAdapter {
+  /** TODO: Refactor */
+  public final List<BotEvent> ongoingBotEvents = new ArrayList<BotEvent>();
   public final KoboldCPPClient llmClient = new KoboldCPPClient();
+
+  /** A CommandList that lists all valid commands */
+  private final CommandList commandList = new CommandList();
 
   public static void main(String[] arguments) throws Exception {
     Dotenv dotenv = Dotenv.configure().load();
@@ -46,8 +43,11 @@ public class App extends ListenerAdapter {
   public void onReady(ReadyEvent event) {
     /* Create a List of CommandData to add to the bot's slash command list on Discord */
     List<CommandData> commandDataList = new ArrayList<CommandData>();
-    commandList.commandHash.forEach((commandName, command) -> commandDataList
-        .add(Commands.slash(commandName, command.description).addOptions(command.commandOptions)));
+
+    commandList.getCommandMap()
+        .forEach((commandName, command) -> commandDataList
+            .add(Commands.slash(commandName, command.getDescription())
+                .addOptions(command.getCommandOptions())));
 
     /* Update the bot's command list all at once here */
     event.getJDA().updateCommands().addCommands(commandDataList).queue();
@@ -77,7 +77,7 @@ public class App extends ListenerAdapter {
   @Override
   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
     /* Pass command handling to a newly created command handler. */
-    new CommandHandler(this).executeHandler(event);
+    new CommandHandler(this).executeHandler(event, commandList.getCommandBody(event.getName()));
   }
 
   /**
