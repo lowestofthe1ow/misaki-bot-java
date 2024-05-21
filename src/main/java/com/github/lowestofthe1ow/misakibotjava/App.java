@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 public class App extends ListenerAdapter {
@@ -45,9 +44,8 @@ public class App extends ListenerAdapter {
     List<CommandData> commandDataList = new ArrayList<CommandData>();
 
     commandList.getCommandMap()
-        .forEach((commandName, command) -> commandDataList
-            .add(Commands.slash(commandName, command.getDescription())
-                .addOptions(command.getCommandOptions())));
+        .forEach((commandName, commandBody) -> commandDataList
+            .add(commandBody.asCommandData(commandName)));
 
     /* Update the bot's command list all at once here */
     event.getJDA().updateCommands().addCommands(commandDataList).queue();
