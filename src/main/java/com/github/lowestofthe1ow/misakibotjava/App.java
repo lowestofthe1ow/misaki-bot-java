@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.github.lowestofthe1ow.misakibotjava.botevents.BotEvent;
 import com.github.lowestofthe1ow.misakibotjava.koboldcpp.KoboldCPPClient;
-import com.github.lowestofthe1ow.misakibotjava.slashcommands.CommandHandler;
 import com.github.lowestofthe1ow.misakibotjava.slashcommands.CommandList;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -33,11 +32,6 @@ public class App extends ListenerAdapter {
         .addEventListeners(new App()).build();
   }
 
-  /**
-   * Called when the JDA instance is ready.
-   * 
-   * @param event
-   */
   @Override
   public void onReady(ReadyEvent event) {
     /* Create a List of CommandData to add to the bot's slash command list on Discord */
@@ -51,11 +45,6 @@ public class App extends ListenerAdapter {
     event.getJDA().updateCommands().addCommands(commandDataList).queue();
   }
 
-  /**
-   * Called whenever a message is sent in a channel the bot has access to.
-   * 
-   * @param event The MessageReceivedEvent detected by the listener
-   */
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
     if (event.getMessage().getMentions().getUsers().contains(event.getJDA().getSelfUser())) {
@@ -67,22 +56,12 @@ public class App extends ListenerAdapter {
     }
   }
 
-  /**
-   * Called whenever a slash command is performed by a user.
-   * 
-   * @param event The SlashCommandInteractionEvent detected by the listener
-   */
   @Override
   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
     /* Pass command handling to a newly created command handler. */
-    new CommandHandler(this).executeHandler(event, commandList.getCommandBody(event.getName()));
+    commandList.getCommandBody(event.getName()).executeCallback(event);
   }
 
-  /**
-   * Called whenever a button is pressed by a user.
-   * 
-   * @param event The ButtonInteractionEvent detected by the listener
-   */
   @Override
   public void onButtonInteraction(ButtonInteractionEvent event) {
     /*

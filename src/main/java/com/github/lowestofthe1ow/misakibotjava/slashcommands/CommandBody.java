@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.github.lowestofthe1ow.misakibotjava.botevents.BotEvent;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -14,30 +17,29 @@ public class CommandBody {
   private final String description;
   private final List<OptionData> commandOptions;
   private final Consumer<SlashCommandInteractionEvent> callback;
+  private final Supplier<BotEvent> botEventSupplier;
 
   /**
-   * Creates a CommandData object based on a given name.
+   * Creates a {@link CommandData} object based on a given name.
    * 
    * @param name The name of the command
-   * @return a CommandData object that contains the command's name, description, and options
+   * @return a {@link CommandData} object that contains the command's name, description, and options
    */
   public CommandData asCommandData(String name) {
     return Commands.slash(name, description).addOptions(commandOptions);
   }
 
   /**
-   * Gets the command description.
-   * 
-   * @return the command description
+   * {@return the command description}
    */
   public String getDescription() {
     return description;
   }
 
   /**
-   * Gets the possible options a user may specify when using a command.
+   * Returns a List of the possible options a user may specify when using a command.
    * 
-   * @return a List of OptionData containing the command options
+   * @return a List of {@link OptionData} containing the command options
    */
   public List<OptionData> getCommandOptions() {
     return commandOptions;
@@ -46,22 +48,49 @@ public class CommandBody {
   /**
    * Executes the command's callback.
    * 
-   * @param event The SlashCommandInteractionEvent associated with the command input
+   * @param event The {@link SlashCommandInteractionEvent} associated with the command input
    */
-  public void execute(SlashCommandInteractionEvent event) {
+  public void executeCallback(SlashCommandInteractionEvent event) {
     callback.accept(event);
+  }
+
+  /**
+   * Checks if the command can supply a {@link BotEvent} object
+   * 
+   * @return true if a {@link BotEvent} {@link Supplier} is tied to the object, false otherwise
+   * @see {@link Builder#setBotEventSupplier}
+   */
+  public Boolean canCreateBotEvent() {
+    return botEventSupplier != null;
+  }
+
+  /**
+   * Creates a {@link BotEvent} through the {@link #botEventSupplier} object.
+   * 
+   * @return the created {@link BotEvent} instance
+   * @throws NullPointerException if no {@link BotEvent} {@link Supplier} is tied to the object
+   * @see {@link #canCreateBotEvent} to first check if the {@link Supplier} object exists
+   * @see {@link Builder#setBotEventSupplier}
+   */
+  public BotEvent createBotEvent() {
+    if (botEventSupplier == null)
+      throw new NullPointerException("No BotEvent Supplier object is tied to this CommandBody");
+
+    return botEventSupplier.get();
   }
 
   private CommandBody(Builder builder) {
     this.description = builder.description;
     this.commandOptions = builder.commandOptions;
     this.callback = builder.callback;
+    this.botEventSupplier = builder.botEventSupplier;
   }
 
   public static class Builder {
     private String description;
     private List<OptionData> commandOptions;
     private Consumer<SlashCommandInteractionEvent> callback;
+    private Supplier<BotEvent> botEventSupplier;
 
     public Builder setDescription(String description) {
       this.description = description;
@@ -75,6 +104,11 @@ public class CommandBody {
 
     public Builder setCallback(Consumer<SlashCommandInteractionEvent> callback) {
       this.callback = callback;
+      return this;
+    }
+
+    public Builder setBotEventSupplier(Supplier<BotEvent> botEventSupplier) {
+      this.botEventSupplier = botEventSupplier;
       return this;
     }
 
